@@ -22,7 +22,6 @@ EventLog is a web-based amateur radio logging system designed for recording, man
   * Event controller management
 
 * **Diplomas**
-
   * Automatic diploma qualification checking
   * Custom diploma templates
   * PDF diploma backgrounds
@@ -58,11 +57,35 @@ EventLog is a web-based amateur radio logging system designed for recording, man
   * Responsive web interface
 
 
-## Reqirments
+## Requirements
+* Web server with PHP support
+* **PHP 8.2.12 or newer**
+* **MySQL/MariaDB** database server
+* PHP **MySQLi** extension
+* Web browser with JavaScript support
+* Sufficient storage space for the application and database
 
-## Instaation
+## Installation
+First, you need to create an SQL database. After creating the database, create a user for the database and grant the user access to it.
+
+Then, copy the contents of the `src` folder and upload them to your web server.
 
 ## Setup
+After completing the installation, open the `db.php` file and enter all required values in the `mysqli_connect()` function:
+
+```php
+mysqli_connect(Host name, Username, Password, Database name)
+```
+
+Then open the website and click **Sign In**. Use `ADMIN` as the username and choose a password.
+
+If the sign-in is successful, open the database and find the `users` table. Find the row with the username `ADMIN`, edit the `RIGHTS` field, and set it to:
+
+```text
+111111
+```
+
+You now have an **ADMIN account with full permissions** and can invite other users.
 
 ## How do it work
 
