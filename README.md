@@ -70,6 +70,8 @@ First, you need to create an SQL database. After creating the database, create a
 
 Then, copy the contents of the `src` folder and upload them to your web server.
 
+After that, copy the SQL commands from the `SQL` folder into the SQL command prompt. Before starting the website, two tables need to be created: `users` and `login_log`.
+
 ## Setup
 After completing the installation, open the `db.php` file and enter all required values in the `mysqli_connect()` function:
 
@@ -86,6 +88,7 @@ If the sign-in is successful, open the database and find the `users` table. Find
 ```
 
 You now have an **ADMIN account with full permissions** and can invite other users.
+All notifications about new users will be sent to the email address associated with the **admin account**.
 
 ## How do it work
 
