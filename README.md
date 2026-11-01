@@ -8,6 +8,7 @@ EventLog is a web-based amateur radio logging system designed for recording, man
 * **QSO Logging**
 
   * Manual QSO entry
+  * Connection with LOG4OM
   * ADIF import
   * QSO search and filtering
   * Previous QSO checking
