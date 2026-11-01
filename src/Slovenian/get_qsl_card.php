@@ -53,11 +53,11 @@ function RotatedImage($file,$x,$y,$w,$h,$angle)
             $json = $json1;
         }
 
-        if ($json2 !== null && $points >= (int)$json2['CARD']['POINT_N']) {
+        if ($json2 !== null && $points >= (int)$json2['CARD']['POINT_N'] && (int)$json2['CARD']['POINT_N'] > (int)$json1['CARD']['POINT_N']) {
             $json = $json2;
         }
 
-        if ($json3 !== null && $points >= (int)$json3['CARD']['POINT_N']) {
+        if ($json3 !== null && $points >= (int)$json3['CARD']['POINT_N'] && (int)$json3['CARD']['POINT_N'] > (int)$json2['CARD']['POINT_N']) {
             $json = $json3;
         }
 

@@ -85,137 +85,162 @@
     ?>
 
     <div>
-        <form action="ad_qso_s.php" method="POST">
-    <input type="text" name="callsign" id="callInput" placeholder="KLICNI ZNAK" required>
 
-    <input type="text" name="date" id="dateInput" placeholder="DD/MM/YYYY" required>
-    <input type="text" name="time" id="timeInput" placeholder="HH:MM" required>
+    <form action="ad_qso_s.php" method="POST">
+        <input type="text" name="callsign" id="callInput" placeholder="KLICNI ZNAK" required>
 
-    <input type="text" name="name" id="nameInput" placeholder="IME OPERATERJA">
+        <input type="text" name="date" id="dateInput" placeholder="DD/MM/YYYY" required>
+        <input type="text" name="time" id="timeInput" placeholder="HH:MM" required>
+
+        <input type="text" name="name" id="nameInput" placeholder="IME OPERATERJA">
 
 
-    <select name="band" style="padding: 5px;">
-        <option value="" <?= $default_band == "none" ? "selected" : "" ?> disabled>BAND</option>
-        <option value="180M" <?= $default_band == "180M" ? "selected" : "" ?>>180 M</option>
-        <option value="160M" <?= $default_band == "160M" ? "selected" : "" ?>>160 M</option>
-        <option value="80M" <?= $default_band == "80M" ? "selected" : "" ?>>80 M</option>
-        <option value="60M" <?= $default_band == "60M" ? "selected" : "" ?>>60 M</option>
-        <option value="40M" <?= $default_band == "40M" ? "selected" : "" ?>>40 M</option>
-        <option value="30M" <?= $default_band == "30M" ? "selected" : "" ?>>30 M</option>
-        <option value="20M" <?= $default_band == "20M" ? "selected" : "" ?>>20 M</option>
-        <option value="17M" <?= $default_band == "17M" ? "selected" : "" ?>>17 M</option>
-        <option value="15M" <?= $default_band == "15M" ? "selected" : "" ?>>15 M</option>
-        <option value="12M" <?= $default_band == "12M" ? "selected" : "" ?>>12 M</option>
-        <option value="10M" <?= $default_band == "10M" ? "selected" : "" ?>>10 M</option>
-        <option value="6M" <?= $default_band == "6M" ? "selected" : "" ?>>6 M</option>
-        <option value="4M" <?= $default_band == "4M" ? "selected" : "" ?>>4 M</option>
-        <option value="2M" <?= $default_band == "2M" ? "selected" : "" ?>>2 M</option>
-        <option value="70CM" <?= $default_band == "70CM" ? "selected" : "" ?>>70 cm</option>
-        <option value="23CM" <?= $default_band == "23CM" ? "selected" : "" ?>>23 cm</option>
-    </select>
+        <select name="band" style="padding: 5px;">
+            <option value="" <?= $default_band == "none" ? "selected" : "" ?> disabled>BAND</option>
+            <option value="180M" <?= $default_band == "180M" ? "selected" : "" ?>>180 M</option>
+            <option value="160M" <?= $default_band == "160M" ? "selected" : "" ?>>160 M</option>
+            <option value="80M" <?= $default_band == "80M" ? "selected" : "" ?>>80 M</option>
+            <option value="60M" <?= $default_band == "60M" ? "selected" : "" ?>>60 M</option>
+            <option value="40M" <?= $default_band == "40M" ? "selected" : "" ?>>40 M</option>
+            <option value="30M" <?= $default_band == "30M" ? "selected" : "" ?>>30 M</option>
+            <option value="20M" <?= $default_band == "20M" ? "selected" : "" ?>>20 M</option>
+            <option value="17M" <?= $default_band == "17M" ? "selected" : "" ?>>17 M</option>
+            <option value="15M" <?= $default_band == "15M" ? "selected" : "" ?>>15 M</option>
+            <option value="12M" <?= $default_band == "12M" ? "selected" : "" ?>>12 M</option>
+            <option value="10M" <?= $default_band == "10M" ? "selected" : "" ?>>10 M</option>
+            <option value="6M" <?= $default_band == "6M" ? "selected" : "" ?>>6 M</option>
+            <option value="4M" <?= $default_band == "4M" ? "selected" : "" ?>>4 M</option>
+            <option value="2M" <?= $default_band == "2M" ? "selected" : "" ?>>2 M</option>
+            <option value="70CM" <?= $default_band == "70CM" ? "selected" : "" ?>>70 cm</option>
+            <option value="23CM" <?= $default_band == "23CM" ? "selected" : "" ?>>23 cm</option>
+        </select>
 
-    <!-- MODE: dropdown -->
-    <select name="mode" style="padding:5px;">
-        <option value="" <?= $default_mode == "none" ? "selected" : "" ?> disabled>MODE</option>
-        <option value="SSB" <?= $default_mode == "SSB" ? "selected" : "" ?>>SSB</option>
-        <option value="USB" <?= $default_mode == "USB" ? "selected" : "" ?>>USB</option>
-        <option value="LSB" <?= $default_mode == "LSB" ? "selected" : "" ?>>LSB</option>
-        <option value="CW" <?= $default_mode == "CW" ? "selected" : "" ?>>CW</option>
-        <option value="FM" <?= $default_mode == "FM" ? "selected" : "" ?>>FM</option>
-        <option value="AM" <?= $default_mode == "AM" ? "selected" : "" ?>>AM</option>
-        <option value="FT8" <?= $default_mode == "FT8" ? "selected" : "" ?>>FT8</option>
-        <option value="FT4" <?= $default_mode == "FT4" ? "selected" : "" ?>>FT4</option>
-        <option value="RTTY" <?= $default_mode == "RTTY" ? "selected" : "" ?>>RTTY</option>
-        <option value="PSK31" <?= $default_mode == "PSK31" ? "selected" : "" ?>>PSK31</option>
-        <option value="DIGI" <?= $default_mode == "DIGI" ? "selected" : "" ?>>DIGI</option>
-    </select>
-   
-    <select name="event" id="izbira" required style="padding:5px;"> 
-        <option value="" selected disabled>Izberi dogodek</option><?php echo "003"; ?>  
-        <?php 
-            function chackArray($str, $array){
-                $tmp_str = implode(", ", $array);
-                return str_contains($tmp_str, $str);
-            }
-            $need_to_select_logs_ids = [];
-            $need_to_select_logs_log_names = [];
-            while($row = mysqli_fetch_assoc($res)){
-                $selection_id = $row['DOGODEK_ID'];
-                if($row['DOGODEK_ID'] == $default_event){
-                    $default_event_stm = "selected";
-                }
-                else{
-                    $default_event_stm = "";
-                }
-                $controlers = json_decode($row['EVENT_CONTROLL'] ?? '[]', true);
-                if(chackArray($_SESSION['username'], $controlers)){
-                    if (!is_array($need_to_select_logs_ids)) {
-                        $need_to_select_logs_ids = [];
+        <!-- MODE: dropdown -->
+        <select name="mode" style="padding:5px;">
+            <option value="" <?= $default_mode == "none" ? "selected" : "" ?> disabled>MODE</option>
+            <option value="SSB" <?= $default_mode == "SSB" ? "selected" : "" ?>>SSB</option>
+            <option value="USB" <?= $default_mode == "USB" ? "selected" : "" ?>>USB</option>
+            <option value="LSB" <?= $default_mode == "LSB" ? "selected" : "" ?>>LSB</option>
+            <option value="CW" <?= $default_mode == "CW" ? "selected" : "" ?>>CW</option>
+            <option value="FM" <?= $default_mode == "FM" ? "selected" : "" ?>>FM</option>
+            <option value="AM" <?= $default_mode == "AM" ? "selected" : "" ?>>AM</option>
+            <option value="FT8" <?= $default_mode == "FT8" ? "selected" : "" ?>>FT8</option>
+            <option value="FT4" <?= $default_mode == "FT4" ? "selected" : "" ?>>FT4</option>
+            <option value="RTTY" <?= $default_mode == "RTTY" ? "selected" : "" ?>>RTTY</option>
+            <option value="PSK31" <?= $default_mode == "PSK31" ? "selected" : "" ?>>PSK31</option>
+            <option value="DIGI" <?= $default_mode == "DIGI" ? "selected" : "" ?>>DIGI</option>
+        </select>
+    
+        <select name="event" id="izbira" required style="padding:5px;"> 
+            <option value="" selected disabled>Izberi dogodek</option><?php echo "003"; ?>  
+            <?php 
+                function chackArray($str, $array){
+                    if(!is_array($array)){
+                        return false;
                     }
-                    if (!is_array($need_to_select_logs_log_names)) {
-                        $need_to_select_logs_log_names = [];
-                    }
-                    $need_to_select_logs_ids[] = $selection_id;
-                    $need_to_select_logs_log_names[] = $row['MAIN_LOG'];
-                }
 
-                ?>
-                    <option value="<?php echo $row['DOGODEK_ID']; ?>" <?php /*echo $default_log_stm;*/ ?> ><?php echo $row['IME_DOGODKA']; ?></option>
-                <?php
+                    $str = strtoupper(trim((string)$str)); 
+                    $array = array_map(function($value){
+                        return strtoupper(trim((string)$value));
+                    }, $array);
+
+                    return in_array($str, $array, true);
+                }
+                $need_to_select_logs_ids = [];
+                $need_to_select_logs_log_names = [];
+                while($row = mysqli_fetch_assoc($res)){
+                    $selection_id = $row['DOGODEK_ID'];
+                    if($row['DOGODEK_ID'] == $default_event){
+                        $default_event_stm = "selected";
+                    }
+                    else{
+                        $default_event_stm = "";
+                    }
+                    $controlers = json_decode($row['EVENT_CONTROLL'] ?? '[]', true);
+                    if(chackArray($_SESSION['username'], $controlers)){
+                        $need_to_select_logs_ids[] = $selection_id;
+                        $need_to_select_logs_log_names[] = $row['MAIN_LOG'];
+                    }
+
+                    ?>
+                        <option value="<?php echo $row['DOGODEK_ID']; ?>" <?php echo $default_event_stm; ?> ><?php echo $row['IME_DOGODKA']; ?></option>
+                    <?php
+                    
+                }
                 
-            }
-            
-            
-        ?>
-    </select>
+            ?>
+        </select>
 
 
-    <select name="log_name" id="log_name_sel" required style="padding: 5px; display: none;">
-        <option value="" id="dif_log"></option>
-        <option value="<?php echo $_SESSION['log_name'] ?>">Osebni log</option>
-    </select>
+        <select name="log_name" id="log_name_sel" style="padding: 5px; display: none;"> 
+            <option value="" id="dif_log"></option>
+            <option value="<?php echo $_SESSION['log_name'] ?>">Osebni log</option>
+        </select>
 
-<script>
-    const ecnts = <?php echo json_encode($need_to_select_logs_ids ?? []); ?>;
-    const log_name_list = <?php echo json_encode($need_to_select_logs_log_names ?? []); ?>;
+        <script>
+            const ecnts = <?php echo json_encode($need_to_select_logs_ids); ?>;
+            const log_name_list = <?php echo json_encode($need_to_select_logs_log_names); ?>;
+            <?php 
+                $query = "SELECT `REQUIRE_LOG` FROM `dogodki`;";
+                $res = mysqli_query($con, $query);
+            ?>
 
-    const event_sel = document.getElementById("izbira");
-    const log_sel = document.getElementById("log_name_sel");
-    const diff_log = document.getElementById("dif_log");
+            const require_logs = <?php $tmp_arr = []; while($row = mysqli_fetch_assoc($res)) $tmp_arr[] = $row['REQUIRE_LOG']; echo json_encode($tmp_arr);?>;
 
-    event_sel.addEventListener("change", function () {
-        const index = ecnts.indexOf(this.value);
-        console.log(this.value);
+            <?php 
+                $query = "SELECT `DOGODEK_ID` FROM `dogodki`;";
+                $res = mysqli_query($con, $query);
+            ?>
 
-        if (index !== -1) {
-            log_sel.style.display = "block";
+            const log_names = <?php $tmp_arr = []; while($row = mysqli_fetch_assoc($res)) $tmp_arr[] = $row['DOGODEK_ID']; echo json_encode($tmp_arr);?>;
+             
 
-            // Ime loga z istega indeksa kot ID dogodka
-            diff_log.value = log_name_list[index];
-            diff_log.textContent = log_name_list[index];
-        } else {
-            log_sel.style.display = "none";
-        }
-    });
-</script>
+            const event_sel = document.getElementById("izbira");
+            const log_sel = document.getElementById("log_name_sel");
+            const diff_log = document.getElementById("dif_log");
+
+            event_sel.addEventListener("change", function () {
+                const index = ecnts.indexOf(this.value);
+                console.log(index);
+
+                if (index !== -1) {
+                    log_sel.style.display = "block";
+
+                    // Ime loga z istega indeksa kot ID dogodka
+                    diff_log.value = log_name_list[index];
+                    diff_log.textContent = log_name_list[index];
+                } 
+                else {
+                    log_sel.style.display = "none";
+                    perm_index = log_names.indexOf(this.value);
+                    if(require_logs[perm_index] == '0'){
+                        document.getElementById("submit_btn").disabled = true;
+                        alert("Nimate dovoljenja za vpis zveze!");
+                    }
+                    else{
+                        document.getElementById("submit_btn").disabled = false;
+                    }
+                }
+            });
+        </script>
 
 
 
-    <div style="display:flex; align-items:center; gap:5px; margin: 0;">
-        <input type="text" name="rst_s" id="rst_s" placeholder="RST S" required>
-        <button type="button" class="raport_btn" onclick="setRST('rst_s', '59')">59</button>
-        <button type="button" class="raport_btn" onclick="setRST('rst_s', '599')">599</button>
-    </div>
+        <div style="display:flex; align-items:center; gap:5px; margin: 0;">
+            <input type="text" name="rst_s" id="rst_s" placeholder="RST S" required>
+            <button type="button" class="raport_btn" onclick="setRST('rst_s', '59')">59</button>
+            <button type="button" class="raport_btn" onclick="setRST('rst_s', '599')">599</button>
+        </div>
 
-    <div style="display:flex; align-items:center; gap:5px; margin: 0;">
-        <input type="text" name="rst_r" id="rst_r" placeholder="RST R" required>
-        <button type="button" class="raport_btn" onclick="setRST('rst_r', '59')">59</button>
-        <button type="button" class="raport_btn" onclick="setRST('rst_r', '599')">599</button>
-    </div>
+        <div style="display:flex; align-items:center; gap:5px; margin: 0;">
+            <input type="text" name="rst_r" id="rst_r" placeholder="RST R" required>
+            <button type="button" class="raport_btn" onclick="setRST('rst_r', '59')">59</button>
+            <button type="button" class="raport_btn" onclick="setRST('rst_r', '599')">599</button>
+        </div>
 
-    <input type="submit" value="VPIŠI" style="margin-top:10px;">
+        <input type="submit" id="submit_btn" value="VPIŠI" style="margin-top:10px;">
 
-</form>
+    </form>
     </div>
 
             <div>
@@ -224,7 +249,7 @@
 
 
     <footer>
-        <p>© 2025 <a href="https://lovro7.eu">Lovro Kočevar Ribič</a>, S57LKR</p>
+        <p>© 2026 <a href="https://s59ekl.si">S59EKL</a></p>
     </footer>
 
     <?php 
@@ -236,14 +261,15 @@
         while ($row = mysqli_fetch_assoc($res)) {
             $name_list[] = [$row['callsign'], $row['name']];
         }
+        $json_name_list = json_encode($name_list, JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_UNICODE);
+        if($json_name_list === false){
+            die(json_last_error_msg());
+        }
+        var_dump($json_name_list);
     ?>
 
 
 <script>
-
-
-
-
     // ---- Auto format DATE ----
     // ---- Auto format DATE ----
     const dateInput = document.getElementById('dateInput');
@@ -251,7 +277,7 @@
     const nameInput = document.getElementById('nameInput');
     const callInput = document.getElementById('callInput');
 
-    const name_list = <?= json_encode($name_list) ?>;
+    const name_list = <?php echo $json_name_list ?>;
 
     callInput.addEventListener('input', function () {
         const oseba = name_list.find(x => x[0].toUpperCase() === callInput.value.toUpperCase());

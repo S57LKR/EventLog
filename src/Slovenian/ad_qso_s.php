@@ -2,6 +2,7 @@
 session_start();
 require "db.php"; // vrne $con
 
+
     $rights_username = $_SESSION['username'];
     $query = "SELECT `RIGHTS` FROM `users` WHERE `USERNAME` = '$rights_username'";
     $res = mysqli_query($con, $query);
@@ -58,12 +59,14 @@ $res = mysqli_query($con, $query);
 $row = mysqli_fetch_assoc($res);
 $event_name = $row['IME_DOGODKA'];
 
-if(isset($_POST['log_name'])){
+if(!empty($_POST['log_name'])){
+    echo "a";
     $log_name = $_POST['log_name'];
     $opombe = $rights_username;
 }
 else{
     $log_name = $_SESSION['log_name'];
+    echo $_SESSION['log_name'] ?? "B";
     $opombe = "";
 }
 

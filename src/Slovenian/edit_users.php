@@ -1,13 +1,23 @@
 <?php
     //error_reporting(0);
-    //ini_set('display_errors', 0);
+    ini_set('display_errors', 0);
     require_once("db.php");
     session_start();
+
+    //Change Tables_in_s59ekl_priz to Tables_in_ + db name!!!
+    $query = "SHOW TABLES WHERE Tables_in_s59ekl_priz NOT IN ('users', 'login_log', 'settings', 'dogodki');";
+    $res_t_2 = mysqli_query($con, $query);
+
+    $log_names = [];
+    while($row = mysqli_fetch_assoc($res_t_2)){
+        $log_names[] = $row['Tables_in_s59ekl_priz']; //Change Tables_in_s59ekl_priz to Tables_in_ + db name!!!
+    }
     
     $rights_username = $_SESSION['username'];
     $query = "SELECT `RIGHTS` FROM `users` WHERE `USERNAME` = '$rights_username'";
     $res = mysqli_query($con, $query);
     $row = mysqli_fetch_assoc($res);
+
 
     $rights = [
         "usl" => $row['RIGHTS'][0] ?? "0",
@@ -26,7 +36,6 @@
     mysqli_query($c, $query);
 }
 
-    ////TODO: email povabljenemu uporabniku
     
     if(!isset($_SESSION['username']) || $rights['pbu'] != "1"){
         echo "You don't have permition to accsess that page.";
@@ -67,7 +76,7 @@
     <br>
 
     <?php 
-        if(isset($_GET['mode'])){
+        if(isset($_GET['mode']) || isset($_POST['mode'])){
             if(isset($_GET['uid'])){
                 if($_GET['mode'] == "ban"){
                     $ban_user_id = $_GET['uid'];
@@ -162,7 +171,20 @@
                                     <tr>
                                             <td><input type="text" name="edit_username" value="<?php echo $row['USERNAME']; ?>"></td>
                                             <td><input type="text" name="edit_mail" value="<?php echo $row['MAIL']; ?>"></td>
-                                            <td><input type="text" name="edit_log_name" value="<?php echo $row['LOG_NAME']; ?>"></td>
+                                            <td>
+                                                <select name="edit_log_name">
+                                                    <option>>-Izberi LOG-<</option>
+                                                    <?php 
+                                                        for($i = 0; $i < count($log_names); $i++){
+                                                            $log_n = $log_names[$i];
+                                                            $selected_stm = ($log_n == $row['LOG_NAME']) ? "selected" : "";
+                                                            ?>
+                                                                <option <?php echo $selected_stm; ?> value="<?php echo $log_n; ?>"><?php echo $log_n; ?></option>
+                                                            <?php
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </td>
                                             <td><input type="checkbox" name="edit_usl" <?php echo ChackRightsChackboy($row['RIGHTS'][0] ?? "0"); ?>></td>
                                             <td><input type="checkbox" name="edit_utl" <?php echo ChackRightsChackboy($row['RIGHTS'][1] ?? "0"); ?>></td>
                                             <td><input type="checkbox" name="edit_pbu" <?php echo ChackRightsChackboy($row['RIGHTS'][2] ?? "0"); ?>></td>
@@ -175,6 +197,14 @@
                                     <tr><th style="text-align: center;" colspan="11"><input type="submit" value="SHRANI"></th></tr>
                                 </table>
                             </form>
+                            <div>
+                                <form action="edit_users.php" method="post">
+                                    <input type="hidden" name="mode" value="cdb">
+                                    <input type="hidden" name="uid" value="<?php echo $user_id_to_edit ?>">
+                                    <input type="text" name="dbn" placeholder="IME LOGA">
+                                    <input type="submit" value="USTVARI LOG">
+                                </form>
+                            </div>
                         <?php
                     }
                     else{
@@ -225,6 +255,75 @@
             }
 
         }
+        if(isset($_POST['mode'])){
+            if(isset($_POST['uid'])){
+                if($_POST['mode'] === "cdb"){
+                    if(isset($_POST['dbn'])){
+                        $dbn = $_POST['dbn'];
+                        if(preg_match('/^[a-zA-Z0-9_šŠđĐčČćĆžŽ]+$/u', $dbn)){
+                            if(!in_array($dbn, $log_names, true)){
+                                $query = "CREATE TABLE `$dbn` (
+                                    `qso_num` int(11) NOT NULL AUTO_INCREMENT,
+                                    `callsign` tinytext NOT NULL,
+                                    `date` tinytext NOT NULL,
+                                    `time` tinytext NOT NULL,
+                                    `band` tinytext NOT NULL,
+                                    `mode` varchar(8) NOT NULL,
+                                    `rst_s` varchar(3) DEFAULT NULL,
+                                    `rst_r` varchar(3) DEFAULT NULL,
+                                    `DOGODEK` tinytext DEFAULT NULL,
+                                    `OPOMBE` tinytext DEFAULT NULL,
+                                    `name` tinytext DEFAULT NULL,
+                                    PRIMARY KEY (`qso_num`)
+                                )";
+
+                                if (!mysqli_query($con, $query)) {
+                                    die("Napaka pri ustvarjanju loga - Kontaktiraj administratorja: " . mysqli_error($con));
+                                }
+
+                                ?>
+                                    <div>
+                                        <h3>Log uspešno ustvarjen!</h3>
+                                        <a href="edit_users.php?mode=edit&uid=<?php echo $_POST['uid']; ?>" target="_self" style="text-decoration: none;"><div class="admin_url">OK</div></a>
+                                    </div>
+                                <?php 
+                            }
+                            else{
+                                ?>
+                                    <div>
+                                        <h2 style="color: red;">Izbrano ime loga že obstaja!</h2>
+                                        <a href="edit_users.php?mode=edit&uid=<?php echo $_POST['uid']; ?>" target="_self" style="text-decoration: none;"><div class="admin_url">OK</div></a>
+                                    </div>
+                                <?php 
+                            }
+                        }
+                        else{
+                            ?>
+                                <div>
+                                    <h2 style="color: red;">Neveljavni znaki v imenu loga!</h2>
+                                    <a href="edit_users.php?mode=edit&uid=<?php echo $_POST['uid']; ?>" target="_self" style="text-decoration: none;"><div class="admin_url">OK</div></a>
+                                </div>
+                            <?php 
+                        }
+                    }
+                    else{
+                        ?>
+                            <div>
+                                <h2 style="color: red;">Manjka ime loga!</h2>
+                                <a href="edit_users.php?mode=edit&uid=<?php echo $_POST['uid']; ?>" target="_self" style="text-decoration: none;"><div class="admin_url">OK</div></a>
+                            </div>
+                        <?php 
+                    }
+                }
+            }
+            else{
+                ?>
+                    <div>
+                        <h2 style="color: red;">Niste izbrali uporabnika!</h2>
+                    </div>
+                <?php 
+            }
+        }
     ?>
 
     <table>
@@ -260,7 +359,7 @@
                     
             ?>
                 <tr>
-                    <td><?php echo $row['USERNAME']; ?></td>
+                    <td><a href="user.php?uid=<?php echo $row['USER_ID']; ?>"><?php echo $row['USERNAME']; ?></a></td>
                     <td><a href="<?php echo $email_link; ?>" target="_blank"><?php echo $row['MAIL']; ?></a></td>
                     <td><?php echo $row['LOG_NAME']; ?></td>
                     <td><?php echo NameRightsState($row['RIGHTS'][0] ?? "0") ?></td>

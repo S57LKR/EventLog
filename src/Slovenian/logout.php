@@ -5,12 +5,12 @@
     $username = $_SESSION['username'];
 
     function log_login($c, $u, $s,){
-    $date = date("d/M/Y");
-    $time = date("H:i:s");
-    $uip = $_SERVER['REMOTE_ADDR'];
-    $query = "INSERT INTO `login_log` (`date`, `time`, `username`, `status`, `ip`) VALUES ('$date', '$time', '$u', '$s', '$uip');";
-    mysqli_query($c, $query);
-}
+        $date = date("d/M/Y");
+        $time = date("H:i:s");
+        $uip = $_SERVER['REMOTE_ADDR'];
+        $query = "INSERT INTO `login_log` (`date`, `time`, `username`, `status`, `ip`) VALUES ('$date', '$time', '$u', '$s', '$uip');";
+        mysqli_query($c, $query);
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,7 +36,7 @@
             <?php
         }
         else{
-            log_login($con, $username, "Odjava uspesna!");
+            log_login($con, $username, "Odjava ni uspela!");
             ?>
                 <div style="text-align: center;">
                     <h1>ODJAVA NEUSPEŠNA!</h1>

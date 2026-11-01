@@ -145,20 +145,25 @@
                     die("Napaka pri ustvarjanju loga - Kontaktiraj administratorja: " . mysqli_error($con));
                 }
                 else{
+                    $query = "SELECT `MAIL` FROM `users` WHERE `USERNAME` = 'ADMIN';";
+                    $res = mysqli_query($con, $query);
+                    $admin_mail = mysqli_fetch_assoc($res)['MAIL'];
+
                     $to = $entry_mail;
                     $subject = "Registracija v log S59EKL";
                     $message = "Pozdravljeni!\n\nUspešno ste se prijavili v S59EKL log.\n\nZa uporabo loga morate počakati da vam administrator oddobri račun. Za pomoč in vprašanje me lahko kontaktirate na lovro.k.ribic@gmail.com.\n\n73 de ekipa S59EKL";
                     $headers = "From: noreply@lovro7.eu\r\n";
-                    $headers .= "Reply-To: lovro.k.ribic@gmail.com\r\n";
+                    $headers .= "Reply-To: " . $admin_mail . "\r\n";
                     $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
                     
                     if(mail($to, $subject, $message, $headers));
 
-                    $to = "lovro.k.ribic@gmail.com";
+
+                    $to = $admin_mail;
                     $subject = "Nova prijava v S59EKL log";
-                    $message = "Pozdravljeni!\n\nNov uporabnik se je prijavil v log S59EKL.\n\nUporabnika lahko povabiš ali odstraniš na spletni strani pod <UREDI UPORABNIKE>\n\n73 de ekipa S59EKL";
+                    $message = "Pozdravljeni!\n\nNov uporabnik se je prijavil v log S59EKL.\n\nUporabnika lahko povabiš ali odstraniš na spletni strani https://lovro7.eu/s59ekl pod <UREDI UPORABNIKE>\nUporabnisko ime: " . $entry_name . "\n\n73 de ekipa S59EKL";
                     $headers = "From: noreply@lovro7.eu\r\n";
-                    $headers .= "Reply-To: lovro.k.ribic@gmail.com\r\n";
+                    $headers .= "Reply-To: " . $admin_mail . "\r\n";
                     $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
 
                     mail($to, $subject, $message, $headers)

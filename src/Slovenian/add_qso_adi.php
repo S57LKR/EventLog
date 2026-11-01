@@ -3,6 +3,9 @@
 // max upload size (v bajtih)
 $maxFileSize = 5 * 1024 * 1024; // 5 MB
 
+ini_set('display_errors', 1);
+error_reporting(32767);
+
 require_once("db.php");
 session_start();
 
@@ -100,15 +103,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['adif_file'])) {
     $row = mysqli_fetch_assoc($res);
     $event_name = $row['IME_DOGODKA'];
 
-    if(isset($_POST['user_st'])){
-        if($_POST['user_st'] == "vd"){
-            $log_name = $_POST['log_name'];
-            $opombe = $rights_username;
-        }
-        else{
-            $log_name = $_SESSION['log_name'];
-            $opombe = "";
-        }
+    if(!empty($_POST['log_name'])){
+        $log_name = $_POST['log_name'];
+        $opombe = $rights_username;
+    }
+    else{
+        $log_name = $_SESSION['log_name'];
+        $opombe = "";
     }
 
 
@@ -202,7 +203,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['adif_file'])) {
                     }
 
                 }
-                $con->close();
             }
         }
     }
@@ -229,76 +229,112 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['adif_file'])) {
         <br>
         <br>
 
+        <?php
+            if(isset($_POST['event'])){
+                $default_event = $_POST['event'];
+            }
+            else{
+                $default_event = "none";
+            }
+        ?>
+
         <select name="event" id="izbira" required style="padding:5px;"> 
             <option value="" selected disabled>Izberi dogodek</option><?php echo "003"; ?>  
             <?php 
-                $user_st = "";
                 $query = "SELECT * FROM `dogodki`;";
                 $res = mysqli_query($con, $query);
                 function chackArray($str, $array){
-                    $tmp_str = implode(", ", $array);
-                    return str_contains($tmp_str, $str);
+                    if(!is_array($array)){
+                        return false;
+                    }
+
+                    $str = strtoupper(trim((string)$str)); 
+                    $array = array_map(function($value){
+                        return strtoupper(trim((string)$value));
+                    }, $array);
+
+                    return in_array($str, $array, true);
                 }
                 $need_to_select_logs_ids = [];
                 $need_to_select_logs_log_names = [];
                 while($row = mysqli_fetch_assoc($res)){
                     $selection_id = $row['DOGODEK_ID'];
+                    if($row['DOGODEK_ID'] == $default_event){
+                        $default_event_stm = "selected";
+                    }
+                    else{
+                        $default_event_stm = "";
+                    }
                     $controlers = json_decode($row['EVENT_CONTROLL'] ?? '[]', true);
                     if(chackArray($_SESSION['username'], $controlers)){
-                        $user_st = "vd";
-                        if (!is_array($need_to_select_logs_ids)) {
-                            $need_to_select_logs_ids = [];
-                        }
-                        if (!is_array($need_to_select_logs_log_names)) {
-                            $need_to_select_logs_log_names = [];
-                        }
                         $need_to_select_logs_ids[] = $selection_id;
                         $need_to_select_logs_log_names[] = $row['MAIN_LOG'];
                     }
-                    else{
-                        $user_st = "us";
-                    }
 
                     ?>
-                        <option value="<?php echo $row['DOGODEK_ID']; ?>" <?php /*echo $default_log_stm;*/ ?> ><?php echo $row['IME_DOGODKA']; ?></option>
+                        <option value="<?php echo $row['DOGODEK_ID']; ?>" <?php echo $default_event_stm; ?> ><?php echo $row['IME_DOGODKA']; ?></option>
                     <?php
                     
-                }   
+                }
+                
             ?>
         </select>
-        <input type="hidden" name="user_st" value="<?php echo $user_st; ?>">
-        <select name="log_name" id="log_name_sel" style="padding: 5px; display: none;">
+        <select name="log_name" id="log_name_sel" style="padding: 5px; display: none;"> 
             <option value="" id="dif_log"></option>
             <option value="<?php echo $_SESSION['log_name'] ?>">Osebni log</option>
         </select>
 
-        <input type="submit" value="NALOŽI DTOTEKO">
+        <script>
+            const ecnts = <?php echo json_encode($need_to_select_logs_ids); ?>;
+            const log_name_list = <?php echo json_encode($need_to_select_logs_log_names); ?>;
+            <?php 
+                $query = "SELECT `REQUIRE_LOG` FROM `dogodki`;";
+                $res = mysqli_query($con, $query);
+            ?>
+
+            const require_logs = <?php $tmp_arr = []; while($row = mysqli_fetch_assoc($res)) $tmp_arr[] = $row['REQUIRE_LOG']; echo json_encode($tmp_arr);?>;
+
+            <?php 
+                $query = "SELECT `DOGODEK_ID` FROM `dogodki`;";
+                $res = mysqli_query($con, $query);
+            ?>
+
+            const log_names = <?php $tmp_arr = []; while($row = mysqli_fetch_assoc($res)) $tmp_arr[] = $row['DOGODEK_ID']; echo json_encode($tmp_arr);?>;
+             
+
+            const event_sel = document.getElementById("izbira");
+            const log_sel = document.getElementById("log_name_sel");
+            const diff_log = document.getElementById("dif_log");
+
+            event_sel.addEventListener("change", function () {
+                const index = ecnts.indexOf(this.value);
+                console.log(index);
+
+                if (index !== -1) {
+                    log_sel.style.display = "block";
+
+                    // Ime loga z istega indeksa kot ID dogodka
+                    diff_log.value = log_name_list[index];
+                    diff_log.textContent = log_name_list[index];
+                } 
+                else {
+                    log_sel.style.display = "none";
+                    perm_index = log_names.indexOf(this.value);
+                    if(require_logs[perm_index] == '0'){
+                        document.getElementById("submit_btn").disabled = true;
+                        alert("Nimate dovoljenja za vpis zveze!");
+                    }
+                    else{
+                        document.getElementById("submit_btn").disabled = false;
+                    }
+                }
+            });
+        </script>
+
+        <input type="submit" id="submit_btn" value="NALOŽI DTOTEKO">
     </form>
 </div>
 
-<script>
-    const ecnts = <?php echo json_encode($need_to_select_logs_ids ?? []); ?>;
-    const log_name_list = <?php echo json_encode($need_to_select_logs_log_names ?? []); ?>;
-
-    const event_sel = document.getElementById("izbira");
-    const log_sel = document.getElementById("log_name_sel");
-    const diff_log = document.getElementById("dif_log");
-
-    event_sel.addEventListener("change", function () {
-        const index = ecnts.indexOf(this.value);
-        console.log(this.value);
-
-        if (index !== -1) {
-            log_sel.style.display = "block";
-
-            // Ime loga z istega indeksa kot ID dogodka
-            diff_log.value = log_name_list[index];
-            diff_log.textContent = log_name_list[index];
-        } else {
-            log_sel.style.display = "none";
-        }
-    });
-</script>
 
 <?php if (!empty($messages)): ?>
 <div>

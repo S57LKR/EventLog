@@ -3,20 +3,35 @@ header("Content-Type: text/plain");
 require_once("db.php");
 
 // ===== API AUTH =====
-$API_USER = "log4om";
-$API_PASS = "tst1234";
+
 
 
 // ===== CHECK POST =====
-if (!isset($_POST['user'], $_POST['pass'], $_POST['adif_file'])) {
+if (!isset($_POST['adif_file'], $_POST['API'], $_POST['API_KEY'], $_POST['EVENT'])) {
     http_response_code(400);
     exit("ERROR");
 }
+$query = "SELECT * FROM `users` WHERE `API` = ? AND `API_KEY` = ?;";
+$stmt = $con->prepare($query);
+$stmt->bind_param("ss", $_POST['API'], $_POST['API_KEY']);
+$stmt->execute();
+$result = $stmt->get_result();
 
-if ($_POST['user'] !== $API_USER || $_POST['pass'] !== $API_PASS) {
+if ($result->num_rows == 0) {
     http_response_code(403);
     exit("ERROR");
 }
+
+$result = $result->fetch_assoc();
+$stmt->close();
+
+if(isset($_POST['LOG'])){
+    $log_name = $_POST['LOG'];
+}
+else{
+    $log_name = $result['LOG_NAME'];
+}
+
 
 $adif = $_POST['adif_file'];
 
@@ -28,6 +43,7 @@ function adif_get($tag, $adif) {
     return "";
 }
 
+$event = $_POST['EVENT'];
 $callsign = adif_get("CALL", $adif);
 $date_raw = adif_get("QSO_DATE", $adif);
 $time_raw = adif_get("TIME_ON", $adif);
@@ -38,6 +54,16 @@ $rst_r = adif_get("RST_RCVD", $adif);
 
 if ($callsign == "") {
     http_response_code(400);
+    exit("ERROR");
+}
+
+$query = "SELECT `EVENT_CONTROLL` FROM `dogodki` WHERE `DOGODEK_ID` = '$event'";
+$res = mysqli_query($con, $query);
+$controll_json = mysqli_fetch_assoc($res)['EVENT_CONTROLL'];
+$controll = json_decode($controll_json, true);
+
+if(!in_array($result['USERNAME'], $controll)){
+    http_response_code(403);
     exit("ERROR");
 }
 
@@ -53,20 +79,22 @@ if (preg_match("/^(\d{2})(\d{2})/", $time_raw, $m)) {
 }
 
 $stmt = $con->prepare(
-    "INSERT INTO s57lkr_qso
-     (callsign, date, time, band, mode, rst_s, rst_r, qsl_status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 0)"
+    "INSERT INTO '$log_name'
+     (callsign, date, time, band, mode, rst_s, rst_r, DOGODEK, OPOMBE)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 );
 
 $stmt->bind_param(
-    "sssssss",
+    "sssssssss",
     $callsign,
     $date,
     $time,
     $band,
     $mode,
     $rst_s,
-    $rst_r
+    $rst_r,
+    $event,
+    $result['USERNAME']
 );
 
 if ($stmt->execute()) {

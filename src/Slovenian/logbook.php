@@ -242,7 +242,7 @@
                         <?php 
                         ?>
                         <input type="text" name="filter" id="filter_input" placeholder="KLICNI ZNAK" value="<?php echo $filter; ?>">
-                        <input type="hidden" name="pn" value="<?php echo $curent_qso_page; ?>">
+                        <input type="hidden" name="pn" value="<?php echo 0; ?>">
                         <input type="hidden" name="call" value="<?php echo $search_call; ?>">
                         <input type="submit" value="IŠČI" style="width: 48%;">
                         <input type="submit" id="clr_btn" value="POČISTI" style="width: 48%;">
@@ -287,7 +287,7 @@
 
                             $table_name = $_SESSION['log_name'];
                             if($filter == "") $query = "SELECT * FROM `$search_table_name` LIMIT $start_qso_num, $qsos_per_page;";
-                            else $query = "SELECT * FROM `$search_table_name` WHERE `callsign` LIKE '$filter' LIMIT $start_qso_num, $qsos_per_page;";
+                            else $query = "SELECT * FROM `$search_table_name` WHERE `callsign` LIKE '$filter' LIMIT $start_qso_num, $qsos_per_page;"; //$
                             $res = mysqli_query($con, $query);
                             while($row = mysqli_fetch_assoc($res)){
                                 $qso_num++;
@@ -305,7 +305,7 @@
                             <td><?php echo $row['name']; ?></td>
                             <td><?php echo $event_names[$index]; ?></td>
                             <?php 
-                                if($rights['utl'] == "1" || $rights['usl']) {
+                                if(($rights['usl'] == "1" && strtoupper($search_call) == strtoupper($rights_username)) || ($rights['utl'] == "1" && strtoupper($search_call) != strtoupper($rights_username))) {
                                     ?>
                                         <td><a href="logbook.php?call=<?php echo $search_call ?>&mode=edit&qso=<?php echo $row['qso_num']; ?>&pn=<?php echo $curent_qso_page ?>&filter=<?php echo $filter; ?>" target="_self">UREDI</a></td>
                                         <td><a href="logbook.php?call=<?php echo $search_call ?>&mode=delete&qso=<?php echo $row['qso_num']; ?>&pn=<?php echo $curent_qso_page ?>&filter=<?php echo $filter; ?>" target="_self">IZBRIŠI</a></td>

@@ -23,6 +23,11 @@
         <h1>S59EKL LOG</h1>
     </header>
 
+<!--  ALERT    -->
+
+
+<!--  ALERT    -->
+
     <br>
 
     <div style="text-align: center;">
@@ -94,7 +99,7 @@ function togglePassword() {
     <?php
             
             $rights_username = $_SESSION['username'];
-            $query = "SELECT `RIGHTS` FROM `users` WHERE `USERNAME` = '$rights_username'";
+            $query = "SELECT `RIGHTS`, `USER_ID` FROM `users` WHERE `USERNAME` = '$rights_username'";
             $res = mysqli_query($con, $query);
             $row = mysqli_fetch_assoc($res);
         
@@ -145,7 +150,39 @@ function togglePassword() {
 
         if(isset($_SESSION['username'])){
             ?>
-                    <a href="logout.php" target="_self" style="text-decoration: none;"><div class="admin_url">IZPIS</div></a>
+                <a href="user.php?uid=<?php echo $row['USER_ID']; ?>" target="_self" style="text-decoration: none;"><div class="admin_url">UREDI UPORABNIŠKI RAČUN</div></a>
+                <div id="log4om-toggle" class="admin-button" style="text-align: center;">
+                    LOG4OM
+                </div>
+                <div id="log4om-form" class="card hidden">
+                    <table>
+                        <tr>
+                            <th>Ime dogodka</th>
+                            <th>ID</th>
+                            <th>Log</th>
+                        </tr>
+                        <?php
+                            $query = "SELECT `IME_DOGODKA`, `DOGODEK_ID`, `MAIN_LOG` FROM `dogodki`;";
+                            $res = mysqli_query($con, $query);
+                            while($row = mysqli_fetch_assoc($res)){
+                                ?>
+                                    <tr>
+                                        <td><?php echo $row['IME_DOGODKA']; ?></td>
+                                        <td><?php echo $row['DOGODEK_ID']; ?></td>
+                                        <td><?php echo $row['MAIN_LOG']; ?></td>
+                                    </tr>
+                                <?php
+                            }
+                        ?>
+
+                    </table>
+                </div>
+                <script>
+                    document.getElementById("log4om-toggle").onclick = () => {
+                        document.getElementById("log4om-form").classList.toggle("hidden");
+                    };
+                </script>
+                <a href="logout.php" target="_self" style="text-decoration: none;"><div class="admin_url">IZPIS</div></a>
             <?php
         }
 
