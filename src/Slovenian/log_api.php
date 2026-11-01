@@ -79,7 +79,7 @@ if (preg_match("/^(\d{2})(\d{2})/", $time_raw, $m)) {
 }
 
 $stmt = $con->prepare(
-    "INSERT INTO '$log_name'
+    "INSERT INTO $log_name
      (callsign, date, time, band, mode, rst_s, rst_r, DOGODEK, OPOMBE)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 );
